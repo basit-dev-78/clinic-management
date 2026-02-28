@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLINIC·MS | professional suite</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #f2f5fa;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    /* main glassmorphic container */
+    .app-wrapper {
+      max-width: 1600px;
+      width: 100%;
+      height: 95vh;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 42px;
+      box-shadow: 0 30px 60px -20px rgba(0,40,60,0.4), 0 0 0 1px rgba(156,188,210,0.3) inset;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ========= SIDEBAR (left) ========= */
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(175deg, #f5faff 0%, #ecf5fc 100%);
+      backdrop-filter: blur(4px);
+      border-right: 1px solid rgba(175, 200, 220, 0.5);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 16px;
+      box-shadow: 6px 0 22px -14px rgba(34,68,102,0.2);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 42px;
+      padding-left: 8px;
+    }
+
+    .logo-icon {
+      background: #1b6b8f;
+      width: 40px;
+      height: 40px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 10px 18px -8px #1b6b8f80;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.5rem;
+      background: linear-gradient(140deg, #164a63, #257b9c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .role-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 30px 0 20px;
+    }
+
+    .role-side-btn {
+      padding: 14px 22px;
+      border: none;
+      background: transparent;
+      border-radius: 28px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: #2b506b;
+      transition: 0.25s;
+      cursor: pointer;
+    }
+
+    .role-side-btn i { font-style: normal; width: 26px; font-size: 1.3rem; }
+    .role-side-btn.active {
+      background: white;
+      box-shadow: 0 15px 25px -14px #a0c3db;
+      color: #0c3b52;
+      border: 1px solid white;
+    }
+    .role-side-btn:not(.active):hover { background: rgba(255,255,255,0.6); }
+
+    .user-chip {
+      margin-top: auto;
+      background: rgba(255,255,255,0.7);
+      border-radius: 40px;
+      padding: 18px 18px;
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+    }
+
+    .user-chip #sidebarUser { font-weight: 700; color: #19536e; }
+
+    /* ========= MAIN PANEL (right) ========= */
+    .main-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(6px);
+      overflow-y: auto;
+    }
+
+    /* header inside main */
+    .panel-header {
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(158, 188, 210, 0.3);
+    }
+
+    .view-title {
+      font-size: 1.9rem;
+      font-weight: 600;
+      background: linear-gradient(145deg, #1a445b, #216a88);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge-role {
+      background: #d4e2f0;
+      color: #1b5777;
+      padding: 8px 26px;
+      border-radius: 36px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      font-size: 0.95rem;
+    }
+
+    /* ===== LOGIN / SIGNUP CARD (embedded) ===== */
+    .auth-card {
+      background: white;
+      border-radius: 34px;
+      margin: 24px 32px;
+      padding: 32px;
+      box-shadow: 0 20px 40px -16px rgba(26,90,120,0.2);
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+
+    .toggle-forms {
+      display: flex;
+      gap: 6px;
+      background: #e6f0f8;
+      border-radius: 44px;
+      padding: 5px;
+      width: fit-content;
+      margin-bottom: 30px;
+    }
+
+    .toggle-forms button {
+      padding: 12px 32px;
+      border: none;
+      background: transparent;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #1d4b68;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .toggle-forms .active-form {
+      background: white;
+      box-shadow: 0 6px 14px #c7d9e9;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .form-row label { font-weight: 600; color: #1c4b66; margin-left: 6px; }
+    .form-row input, .form-row select {
+      padding: 16px 22px;
+      border: 1.5px solid #d1e0ed;
+      border-radius: 34px;
+      font-size: 1rem;
+      background: white;
+    }
+
+    .btn-primary {
+      background: #1d6b8f;
+      border: none;
+      padding: 18px 32px;
+      border-radius: 42px;
+      font-weight: 700;
+      color: white;
+      font-size: 1.15rem;
+      box-shadow: 0 12px 22px -12px #1d6b8f;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary:active { transform: scale(0.98); background: #115272; }
+
+    /* ===== ADMIN DASHBOARD (tab container) ===== */
+    .admin-dashboard {
+      margin: 20px 30px 30px 30px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 38px;
+      padding: 24px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    .admin-tabs-header {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      background: #edf4fb;
+      padding: 8px;
+      border-radius: 70px;
+    }
+
+    .admin-tab-btn {
+      padding: 14px 28px;
+      border: none;
+      background: transparent;
+      border-radius: 60px;
+      font-weight: 600;
+      color: #245d7c;
+      font-size: 1rem;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .admin-tab-btn.active-tab {
+      background: white;
+      box-shadow: 0 12px 24px -18px #2b7ca0;
+      color: #0e3c57;
+    }
+
+    /* lengthy tab content cards */
+    .tab-content-pane {
+      display: none;
+      animation: fade 0.2s;
+    }
+    .tab-content-pane.active-pane { display: block; }
+
+    @keyframes fade { from { opacity:0.3;} to {opacity:1;} }
+
+    /* common card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .doctor-card, .recipient-card {
+      background: white;
+      border-radius: 34px;
+      padding: 24px;
+      box-shadow: 0 8px 22px #cdddec;
+      transition: 0.2s;
+      border: 1px solid white;
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0f3f55;
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      color: #3d6f8d;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+    }
+
+    .status-badge {
+      background: #c8e2d9;
+      color: #0b4a3b;
+      border-radius: 60px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .status-badge.disabled { background: #f1d7d7; color: #a03a3a; }
+
+    .action-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .icon-btn {
+      background: #eaf2f9;
+      border: none;
+      border-radius: 36px;
+      padding: 10px 22px;
+      font-weight: 600;
+      color: #1b5470;
+      cursor: pointer;
+      transition: 0.1s;
+      font-size: 0.9rem;
+    }
+    .icon-btn.enable { background: #c7e6dc; color: #0b543b; }
+    .icon-btn.disable { background: #ffe1de; color: #a14337; }
+
+    /* analytics cards */
+    .analytics-flex {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    .stat-brick {
+      background: white;
+      padding: 32px 40px;
+      border-radius: 38px;
+      box-shadow: 0 6px 20px #cbdae8;
+      font-weight: 600;
+    }
+    .stat-brick span { font-size: 3.1rem; color: #174d69; margin-right: 20px; }
+
+    /* subscription */
+    .sub-card-modern {
+      background: linear-gradient(125deg, #ffffff, #f3faff);
+      border-radius: 38px;
+      padding: 38px;
+      border: 1px solid #c6ddec;
+    }
+
+    /* system usage */
+    .metric-bar {
+      background: #ecf5fc;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    hr { border: 1px solid #d2e3f0; margin: 32px 0; }
+
+    /* left sidebar stats small */
+    .system-stat { font-size: 0.9rem; margin-top: 10px; color: #235772; }
+  </style>
+</head>
+<body>
+<div class="app-wrapper">
+  <!-- LEFT SIDEBAR (role based + quick stats) -->
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon">🏥</div>
+      <span class="logo-text">CLINIC·MS</span>
+    </div>
+
+    <div class="role-stack">
+      <button class="role-side-btn active" data-side="auth"> <i>🔐</i> Login / Signup</button>
+      <button class="role-side-btn" data-side="admin"> <i>🛡️</i> Admin panel</button>
+    </div>
+
+    <!-- quick system health (sidebar decoration) -->
+    <div style="margin-top: 28px; padding: 8px;">
+      <div style="background: #ffffff80; border-radius: 32px; padding: 20px;">
+        <div style="font-weight: 700; color:#1b4e69;">⚡ live usage</div>
+        <div class="system-stat">🟢 sessions: 12</div>
+        <div class="system-stat">📊 api: 3.4k/min</div>
+      </div>
+    </div>
+
+    <div class="user-chip" id="sidebarUserDisplay">
+      <span>👤 </span><span id="sidebarUser">guest</span>
+    </div>
+  </div>
+
+  <!-- RIGHT MAIN PANEL -->
+  <div class="main-panel" id="mainPanel">
+    <!-- dynamic header -->
+    <div class="panel-header">
+      <span class="view-title" id="panelTitle">Authentication</span>
+      <span class="badge-role" id="globalRoleBadge">not logged</span>
+    </div>
+
+    <!-- ========= AUTH VIEW (default) ========= -->
+    <div id="authViewBlock">
+      <div class="auth-card">
+        <div class="toggle-forms" id="clientFormToggle">
+          <button class="active-form" id="showLoginBtn">Log in</button>
+          <button id="showSignupBtn">Create account</button>
+        </div>
+
+        <!-- login form -->
+        <form id="loginFormAuth" onsubmit="return false;">
+          <div class="form-row">
+            <label>Email</label>
+            <input type="email" id="authLoginEmail" value="admin@clinic.ms" placeholder="admin@clinic.ms">
+          </div>
+          <div class="form-row">
+            <label>Password</label>
+            <input type="password" id="authLoginPass" value="admin123">
+          </div>
+          <button class="btn-primary" onclick="handleSidebarLogin()">Sign in</button>
+          <p style="margin-top: 20px; color:#3c6d8c;">demo: use any email + admin in signup</p>
+        </form>
+
+        <!-- signup form (hidden) -->
+        <form id="signupFormAuth" style="display: none;" onsubmit="return false;">
+          <div class="form-row">
+            <label>Full name</label>
+            <input type="text" id="authSignupName" value="Taylor Admin">
+          </div>
+          <div class="form-row">
+            <label>Email</label>
+            <input type="email" id="authSignupEmail" value="taylor@clinic.ms">
+          </div>
+          <div class="form-row">
+            <label>Role</label>
+            <select id="authSignupRole">
+              <option value="doctor">🩺 Doctor</option>
+              <option value="patient">🧑 Patient</option>
+              <option value="recipient">📦 Recipient</option>
+              <option value="admin" selected>👑 Admin</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Password</label>
+            <input type="password" id="authSignupPass" value="demo123">
+          </div>
+          <button class="btn-primary" onclick="handleSidebarSignup()">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ========= ADMIN DASHBOARD (hidden by default, toggled by sidebar) ========= -->
+    <div id="adminViewBlock" style="display: none;">
+      <div class="admin-dashboard">
+        <!-- admin tabs -->
+        <div class="admin-tabs-header" id="adminTabsHeader">
+          <button class="admin-tab-btn active-tab" data-admintab="doctors">🩺 manage doctors</button>
+          <button class="admin-tab-btn" data-admintab="recipients">📦 manage recipients</button>
+          <button class="admin-tab-btn" data-admintab="analytics">📈 view analytics</button>
+          <button class="admin-tab-btn" data-admintab="subscription">💳 subscription plan</button>
+          <button class="admin-tab-btn" data-admintab="system">🖥️ system usage</button>
+        </div>
+
+        <!-- lengthy functional tabs -->
+        <!-- DOCTORS PANE -->
+        <div class="tab-content-pane active-pane" id="paneDoctors">
+          <h2 style="color:#124257;">👨‍⚕️ manage doctors (full functional)</h2>
+          <div class="card-grid" id="doctorGrid">
+            <!-- dynamically via js -->
+          </div>
+        </div>
+
+        <!-- RECIPIENTS PANE -->
+        <div class="tab-content-pane" id="paneRecipients">
+          <h2 style="color:#124257;">📦 manage recipients</h2>
+          <div class="card-grid" id="recipientGrid"></div>
+        </div>
+
+        <!-- ANALYTICS PANE -->
+        <div class="tab-content-pane" id="paneAnalytics">
+          <h2>📊 analytics (live simulation)</h2>
+          <div class="analytics-flex">
+            <div class="stat-brick"><span>248</span> patients</div>
+            <div class="stat-brick"><span>18</span> doctors</div>
+            <div class="stat-brick"><span>9</span> recipients</div>
+          </div>
+          <div style="background: white; border-radius: 38px; padding: 28px;">📉 monthly revenue simulation: $124K (+12%)</div>
+        </div>
+
+        <!-- SUBSCRIPTION PANE -->
+        <div class="tab-content-pane" id="paneSubscription">
+          <div class="sub-card-modern">
+            <h3>💎 current plan: <strong>Clinic premium</strong> ($499/month)</h3>
+            <div style="margin: 30px 0;">
+              <label>Switch plan (simulate):</label>
+              <select id="planSelect">
+                <option>Basic $199</option>
+                <option selected>Premium $499</option>
+                <option>Enterprise $999</option>
+              </select>
+              <button class="icon-btn" id="updatePlanBtn" style="margin-left: 20px;">update (mock)</button>
+            </div>
+            <p>next billing: 2025-05-01 · 30 days left</p>
+          </div>
+        </div>
+
+        <!-- SYSTEM USAGE PANE -->
+        <div class="tab-content-pane" id="paneSystem">
+          <div class="metric-bar">🖥️ active sessions: 14</div>
+          <div class="metric-bar">📦 storage: 342 GB / 500 GB (68%)</div>
+          <div class="metric-bar">⚙️ api calls today: 8,221</div>
+          <div class="metric-bar">🔁 background jobs: 6 running</div>
+          <hr>
+          <button class="icon-btn" id="refreshSysBtn">🔄 refresh (simulated)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- GLOBAL STATE ----------
+    let currentUser = { name: 'guest', role: null, email: '' };
+    // doctors / recipients mock with enabled/disable functionality
+    let doctors = [
+      { id: 'd1', name: 'Dr. Lena White', specialty: 'Cardiology', enabled: true },
+      { id: 'd2', name: 'Dr. Mark Grey', specialty: 'Neurology', enabled: true },
+      { id: 'd3', name: 'Dr. Sarah Bloom', specialty: 'Pediatrics', enabled: false },
+      { id: 'd4', name: 'Dr. Amir Khan', specialty: 'Dermatology', enabled: true },
+    ];
+    let recipients = [
+      { id: 'r1', name: 'Northside Lab', contact: 'James', enabled: true },
+      { id: 'r2', name: 'PharmaCare', contact: 'Dispatch', enabled: true },
+      { id: 'r3', name: 'East Clinic Supply', contact: 'pending', enabled: false },
+      { id: 'r4', name: 'MediLab Recipients', contact: 'Clara', enabled: true },
+    ];
+
+    // DOM elements
+    const sideBtns = document.querySelectorAll('.role-side-btn');
+    const authBlock = document.getElementById('authViewBlock');
+    const adminBlock = document.getElementById('adminViewBlock');
+    const panelTitle = document.getElementById('panelTitle');
+    const globalRoleBadge = document.getElementById('globalRoleBadge');
+    const sidebarUserSpan = document.getElementById('sidebarUser');
+    const loginForm = document.getElementById('loginFormAuth');
+    const signupForm = document.getElementById('signupFormAuth');
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    const showSignupBtn = document.getElementById('showSignupBtn');
+
+    // admin panes
+    const paneDoctors = document.getElementById('paneDoctors');
+    const paneRecipients = document.getElementById('paneRecipients');
+    const paneAnalytics = document.getElementById('paneAnalytics');
+    const paneSubscription = document.getElementById('paneSubscription');
+    const paneSystem = document.getElementById('paneSystem');
+    const adminTabBtns = document.querySelectorAll('.admin-tab-btn');
+    const doctorGrid = document.getElementById('doctorGrid');
+    const recipientGrid = document.getElementById('recipientGrid');
+
+    // Helper: render doctors based on enabled state
+    function renderDoctors() {
+      if (!doctorGrid) return;
+      doctorGrid.innerHTML = '';
+      doctors.forEach(doc => {
+        const card = document.createElement('div');
+        card.className = 'doctor-card';
+        card.innerHTML = `
+          <div class="card-title">${doc.name}</div>
+          <div class="card-sub">${doc.specialty}</div>
+          <div><span class="status-badge ${!doc.enabled ? 'disabled' : ''}">${doc.enabled ? '✅ enabled' : '❌ disabled'}</span></div>
+          <div class="action-group">
+            <button class="icon-btn enable" data-id="${doc.id}" data-action="enableDoctor">enable</button>
+            <button class="icon-btn disable" data-id="${doc.id}" data-action="disableDoctor">disable</button>
+          </div>
+        `;
+        doctorGrid.appendChild(card);
+      });
+    }
+
+    function renderRecipients() {
+      if (!recipientGrid) return;
+      recipientGrid.innerHTML = '';
+      recipients.forEach(rec => {
+        const card = document.createElement('div');
+        card.className = 'recipient-card';
+        card.innerHTML = `
+          <div class="card-title">${rec.name}</div>
+          <div class="card-sub">${rec.contact}</div>
+          <div><span class="status-badge ${!rec.enabled ? 'disabled' : ''}">${rec.enabled ? '🟢 enabled' : '🔴 disabled'}</span></div>
+          <div class="action-group">
+            <button class="icon-btn enable" data-id="${rec.id}" data-action="enableRecipient">enable</button>
+            <button class="icon-btn disable" data-id="${rec.id}" data-action="disableRecipient">disable</button>
+          </div>
+        `;
+        recipientGrid.appendChild(card);
+      });
+    }
+
+    // attach global click for enable/disable (event delegation)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.icon-btn');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      const id = btn.getAttribute('data-id');
+      if (action === 'enableDoctor') {
+        const doc = doctors.find(d => d.id === id);
+        if (doc) { doc.enabled = true; renderDoctors(); }
+      } else if (action === 'disableDoctor') {
+        const doc = doctors.find(d => d.id === id);
+        if (doc) { doc.enabled = false; renderDoctors(); }
+      } else if (action === 'enableRecipient') {
+        const rec = recipients.find(r => r.id === id);
+        if (rec) { rec.enabled = true; renderRecipients(); }
+      } else if (action === 'disableRecipient') {
+        const rec = recipients.find(r => r.id === id);
+        if (rec) { rec.enabled = false; renderRecipients(); }
+      }
+    });
+
+    // update UI based on sidebar selection
+    function setView(side) {
+      if (side === 'auth') {
+        authBlock.style.display = 'block';
+        adminBlock.style.display = 'none';
+        panelTitle.innerText = 'Authentication';
+        globalRoleBadge.innerText = currentUser.role ? currentUser.role : 'not logged';
+      } else {
+        // admin view – but only if role is admin, else fallback with message
+        if (currentUser.role !== 'admin') {
+          alert('Admin access only. Please login as admin (use signup with admin role)');
+          // switch active sidebar back
+          document.querySelector('[data-side="auth"]').click();
+          return;
+        }
+        authBlock.style.display = 'none';
+        adminBlock.style.display = 'block';
+        panelTitle.innerText = 'Admin command center';
+        globalRoleBadge.innerText = 'admin';
+        renderDoctors();
+        renderRecipients();
+      }
+    }
+
+    // side buttons click
+    sideBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sideBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const side = btn.getAttribute('data-side');
+        setView(side);
+      });
+    });
+
+    // login / signup toggle inside auth
+    showLoginBtn.addEventListener('click', () => {
+      showLoginBtn.classList.add('active-form');
+      showSignupBtn.classList.remove('active-form');
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+    });
+    showSignupBtn.addEventListener('click', () => {
+      showSignupBtn.classList.add('active-form');
+      showLoginBtn.classList.remove('active-form');
+      signupForm.style.display = 'block';
+      loginForm.style.display = 'none';
+    });
+
+    // admin tabs switching
+    adminTabBtns.forEach(tab => {
+      tab.addEventListener('click', () => {
+        adminTabBtns.forEach(t => t.classList.remove('active-tab'));
+        tab.classList.add('active-tab');
+        const target = tab.getAttribute('data-admintab');
+        document.querySelectorAll('.tab-content-pane').forEach(p => p.classList.remove('active-pane'));
+        if (target === 'doctors') paneDoctors.classList.add('active-pane');
+        if (target === 'recipients') paneRecipients.classList.add('active-pane');
+        if (target === 'analytics') paneAnalytics.classList.add('active-pane');
+        if (target === 'subscription') paneSubscription.classList.add('active-pane');
+        if (target === 'system') paneSystem.classList.add('active-pane');
+      });
+    });
+
+    // subscription plan simulation
+    document.getElementById('updatePlanBtn')?.addEventListener('click', () => {
+      alert('Subscription plan updated (simulated)');
+    });
+    document.getElementById('refreshSysBtn')?.addEventListener('click', () => {
+      alert('System metrics refreshed (mock)');
+    });
+
+    // ---------- login / signup functions (global) ----------
+    window.handleSidebarLogin = function() {
+      const email = document.getElementById('authLoginEmail').value.trim();
+      const pass = document.getElementById('authLoginPass').value.trim();
+      // simulation: if email includes admin, set role admin
+      let role = 'patient';
+      if (email.includes('admin') || pass === 'admin123') role = 'admin';
+      else if (email.includes('doctor')) role = 'doctor';
+      else if (email.includes('recipient')) role = 'recipient';
+      currentUser = { name: email.split('@')[0], role: role, email };
+      sidebarUserSpan.innerText = currentUser.name + (role ? ` (${role})` : '');
+      globalRoleBadge.innerText = role;
+      if (role === 'admin') {
+        // switch sidebar to admin if possible
+        document.querySelector('[data-side="admin"]').click();
+      } else {
+        document.querySelector('[data-side="auth"]').click();
+      }
+      alert(`Logged in as ${role} (simulated)`);
+    };
+
+    window.handleSidebarSignup = function() {
+      const name = document.getElementById('authSignupName').value.trim() || 'User';
+      const email = document.getElementById('authSignupEmail').value.trim();
+      const role = document.getElementById('authSignupRole').value;
+      currentUser = { name, role, email };
+      sidebarUserSpan.innerText = name + ` (${role})`;
+      globalRoleBadge.innerText = role;
+      if (role === 'admin') {
+        document.querySelector('[data-side="admin"]').click();
+      } else {
+        document.querySelector('[data-side="auth"]').click();
+      }
+      alert(`Account created. Logged in as ${role}`);
+    };
+
+    // initial render: set doctors/recipients arrays
+    renderDoctors();
+    renderRecipients();
+
+    // set default guest
+    sidebarUserSpan.innerText = 'guest';
+  })();
+</script>
+<!-- small style fix for active pane -->
+</body>
+</html>

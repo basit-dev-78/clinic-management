@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClinicFlow · management system</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #e9eef2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        /* main app card */
+        .app-container {
+            max-width: 1300px;
+            width: 100%;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header with role-based welcome */
+        .app-header {
+            background: #ffffff;
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-area h2 {
+            font-weight: 600;
+            color: #0b2b40;
+            font-size: 1.6rem;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-area h2 i {
+            color: #2d7a9b;
+            margin-right: 8px;
+        }
+
+        .role-indicator {
+            background: #f1f9ff;
+            padding: 0.5rem 1.3rem;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #136b8f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-indicator i {
+            font-size: 1rem;
+        }
+
+        /* main area : login/register vs admin panel */
+        .main-stage {
+            padding: 2rem;
+            background: #f8fafc;
+        }
+
+        /* login/register card (visible when not logged in as admin) */
+        .auth-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            max-width: 520px;
+            margin: 1rem auto 2rem auto;
+            border: 1px solid #dee7ed;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dde5eb;
+            padding-bottom: 0.8rem;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.6rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 40px;
+            color: #4f5f6f;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .tab-btn.active {
+            background: #e3f0f7;
+            color: #105e7c;
+        }
+
+        .auth-form h3 {
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: #173342;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #38596e;
+            margin-bottom: 0.25rem;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1.5px solid #d9e2ea;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            background: white;
+            transition: 0.15s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #2d7a9b;
+            box-shadow: 0 0 0 3px rgba(45,122,155,0.1);
+        }
+
+        .btn-primary {
+            background: #186f94;
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 6px -2px rgba(20,88,120,0.3);
+        }
+
+        .btn-primary:hover {
+            background: #0e5a7c;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #bacfd9;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #1a4c63;
+            cursor: pointer;
+        }
+
+        .info-note {
+            background: #ecf7fc;
+            border-radius: 12px;
+            padding: 0.7rem 1rem;
+            font-size: 0.85rem;
+            color: #19536b;
+            margin-top: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ADMIN PANEL (hidden until admin login) */
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-header h2 {
+            font-weight: 600;
+            color: #0e2e3d;
+        }
+
+        .log-out {
+            background: none;
+            border: 1px solid #c7d8e3;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
+            color: #375f74;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* tabs inside admin */
+        .admin-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            background: white;
+            padding: 0.6rem;
+            border-radius: 48px;
+            border: 1px solid #dee9f0;
+            margin-bottom: 2rem;
+        }
+
+        .admin-tab {
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            background: transparent;
+            border: none;
+            font-weight: 500;
+            color: #3c6379;
+            cursor: pointer;
+            transition: 0.1s;
+            font-size: 0.9rem;
+        }
+
+        .admin-tab i {
+            margin-right: 6px;
+        }
+
+        .admin-tab.active {
+            background: #dcebf3;
+            color: #094c69;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            border: 1px solid #e2eef5;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.02);
+        }
+
+        .table-mini {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .table-mini th {
+            text-align: left;
+            padding: 0.8rem 0.2rem 0.5rem 0.2rem;
+            color: #3f6279;
+            font-weight: 600;
+            border-bottom: 1px solid #d4e2ec;
+        }
+
+        .table-mini td {
+            padding: 0.8rem 0.2rem;
+            border-bottom: 1px solid #ecf3f8;
+        }
+
+        .badge {
+            background: #e1f0f8;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #146080;
+        }
+
+        .stat-cards {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #f2f8fd;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.8rem;
+            flex: 1 1 150px;
+            border: 1px solid #dae9f2;
+        }
+
+        .stat-card h4 {
+            color: #114e69;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-card .number {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #0b3b4f;
+        }
+
+        .subscription-sim {
+            background: #e9f3fa;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .usage-bar {
+            background: #deecf5;
+            border-radius: 20px;
+            height: 18px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .usage-fill {
+            background: #1f7b9e;
+            height: 18px;
+            border-radius: 20px;
+            width: 62%;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #cbdbe7;
+            margin: 1.2rem 0;
+        }
+
+        .footer-note {
+            font-size: 0.8rem;
+            color: #587f96;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container" id="appContainer">
+    <!-- header (common) -->
+    <div class="app-header">
+        <div class="logo-area">
+            <h2><i class="fas fa-clinic-medical"></i> ClinicFlow</h2>
+        </div>
+        <div class="role-indicator" id="roleHeader">
+            <i class="fas fa-circle-user"></i>
+            <span id="currentRoleDisplay">Not logged in</span>
+        </div>
+    </div>
+
+    <!-- main stage: dynamic content -->
+    <div class="main-stage" id="mainStage">
+        <!-- AUTH SECTION (Login / Register) visible by default, will be hidden after admin login -->
+        <div id="authSection">
+            <div class="auth-card">
+                <div class="tabs">
+                    <button class="tab-btn active" id="loginTabBtn">Log in</button>
+                    <button class="tab-btn" id="signupTabBtn">Create account</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <div id="loginForm" class="auth-form">
+                    <h3>Welcome back</h3>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="e.g. admin@clinic.com" value="admin@clinic.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" value="admin123">
+                    </div>
+                    <button class="btn-primary" id="loginBtn"><i class="fas fa-arrow-right-to-bracket" style="margin-right: 8px;"></i> Sign in</button>
+                    <div class="info-note"><i class="fas fa-info-circle"></i> Use admin@clinic.com (any password) to enter admin panel</div>
+                </div>
+
+                <!-- SIGNUP FORM (hidden by default) -->
+                <div id="signupForm" class="auth-form" style="display: none;">
+                    <h3>Register new account</h3>
+                    <div class="input-group">
+                        <label>Full name</label>
+                        <input type="text" id="signupName" placeholder="Alex Smith">
+                    </div>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="signupEmail" placeholder="alex@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label>Role</label>
+                        <select id="signupRole">
+                            <option value="doctor">👨‍⚕️ Doctor</option>
+                            <option value="patient">🩺 Patient</option>
+                            <option value="recipient">📦 Recipient (lab/research)</option>
+                            <option value="admin">⚙️ Admin</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="signupPassword" placeholder="create password">
+                    </div>
+                    <button class="btn-primary" id="signupBtn"><i class="fas fa-user-plus" style="margin-right: 8px;"></i> Create account</button>
+                    <p class="footer-note" style="margin-top: 0.8rem;"><i class="far fa-clock"></i> After signup, you can log in with any role (admin unlocks full panel).</p>
+                </div>
+            </div>
+            <!-- demo hint -->
+            <div style="text-align: center; color: #4d7083; font-size: 0.9rem; margin-top: 0.5rem;">
+                <i class="fas fa-shield-alt"></i> For full admin panel login as <strong>admin@clinic.com</strong>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL (hidden initially) -->
+        <div id="adminPanel" class="admin-panel">
+            <div class="admin-header">
+                <h2><i class="fas fa-lock" style="margin-right: 8px; color:#1f6e92;"></i> Admin dashboard</h2>
+                <button class="log-out" id="logoutBtn"><i class="fas fa-sign-out-alt" style="margin-right: 6px;"></i>Log out</button>
+            </div>
+
+            <!-- admin tab navigation -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="manageDoctors"><i class="fas fa-user-md"></i> Manage doctors</button>
+                <button class="admin-tab" data-tab="manageRecipients"><i class="fas fa-hand-holding-heart"></i> Manage recipients</button>
+                <button class="admin-tab" data-tab="analytics"><i class="fas fa-chart-line"></i> Analytics</button>
+                <button class="admin-tab" data-tab="subscription"><i class="fas fa-credit-card"></i> Subscription (sim)</button>
+                <button class="admin-tab" data-tab="systemUsage"><i class="fas fa-desktop"></i> System usage</button>
+            </div>
+
+            <!-- tab content area (dynamic) -->
+            <div class="tab-content" id="adminTabContent">
+                <!-- managed by js -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- Mock data / state -----
+        let currentUser = null; // { email, role, name? }
+
+        // initial fake doctors/recipients for manage tabs
+        let doctors = [
+            { id: 1, name: 'Dr. Sarah Chen', specialty: 'Cardiology', patients: 142 },
+            { id: 2, name: 'Dr. Marcus Webb', specialty: 'Neurology', patients: 98 },
+            { id: 3, name: 'Dr. Priya Kapoor', specialty: 'Pediatrics', patients: 211 }
+        ];
+        let recipients = [
+            { id: 101, name: 'Northside Lab', type: 'Research', samples: 45 },
+            { id: 102, name: 'Blood Bank Center', type: 'Recipient', samples: 112 },
+            { id: 103, name: 'University Genetics', type: 'Recipient', samples: 28 }
+        ];
+
+        // ----- DOM elements -----
+        const authSection = document.getElementById('authSection');
+        const adminPanel = document.getElementById('adminPanel');
+        const roleHeader = document.getElementById('currentRoleDisplay');
+        const loginTabBtn = document.getElementById('loginTabBtn');
+        const signupTabBtn = document.getElementById('signupTabBtn');
+        const loginFormDiv = document.getElementById('loginForm');
+        const signupFormDiv = document.getElementById('signupForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const signupBtn = document.getElementById('signupBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // admin tab buttons
+        const adminTabButtons = document.querySelectorAll('.admin-tab');
+        const adminTabContent = document.getElementById('adminTabContent');
+
+        // ----- helper: render admin panel content based on active tab -----
+        function renderAdminTab(tabId) {
+            if (!adminTabContent) return;
+            let html = '';
+            if (tabId === 'manageDoctors') {
+                html = `<h3 style="margin-bottom: 1.2rem;"><i class="fas fa-user-md" style="margin-right: 10px;"></i>Manage doctors</h3>
+                <table class="table-mini">
+                    <tr><th>Name</th><th>Specialty</th><th>Patients</th><th></th></tr>
+                    ${doctors.map(d => `<tr><td>${d.name}</td><td>${d.specialty}</td><td>${d.patients}</td><td><span class="badge"><i class="far fa-edit"></i> edit</span></td></tr>`).join('')}
+                </table>
+                <button class="btn-outline" style="margin-top: 1rem;" id="simAddDoctor"><i class="fas fa-plus"></i> Simulate add doctor</button>`;
+            } else if (tabId === 'manageRecipients') {
+                html = `<h3 style="margin-bottom: 1.2rem;"><i class="fas fa-hand-holding-heart"></i> Manage recipients / labs</h3>
+                <table class="table-mini">
+                    <tr><th>Name</th><th>Type</th><th>Samples</th><th></th></tr>
+                    ${recipients.map(r => `<tr><td>${r.name}</td><td>${r.type}</td><td>${r.samples}</td><td><span class="badge">view</span></td></tr>`).join('')}
+                </table>
+                <button class="btn-outline" style="margin-top: 1rem;" id="simAddRecipient"><i class="fas fa-plus"></i> Simulate add recipient</button>`;
+            } else if (tabId === 'analytics') {
+                html = `<h3 style="margin-bottom: 1.5rem;">📊 Analytics overview</h3>
+                <div class="stat-cards">
+                    <div class="stat-card"><h4>Appointments</h4><div class="number">847</div><span>this month</span></div>
+                    <div class="stat-card"><h4>New patients</h4><div class="number">128</div><span>+12%</span></div>
+                    <div class="stat-card"><h4>Recipients</h4><div class="number">31</div><span>active</span></div>
+                </div>
+                <p><i class="fas fa-chart-pie" style="margin-right: 8px;"></i> Clinic revenue (sim): <strong>$184,200</strong>  ·  occupancy 78%</p>`;
+            } else if (tabId === 'subscription') {
+                html = `<h3><i class="fas fa-credit-card"></i> Subscription plans (simulated)</h3>
+                <div class="subscription-sim">
+                    <div class="flex-row">
+                        <span><strong>Current plan:</strong> <span class="badge" style="background:#c0e2f2;">Clinical Premium</span></span>
+                        <span><strong>Next billing:</strong> 2025-05-01</span>
+                    </div>
+                    <hr>
+                    <div class="flex-row">
+                        <button class="btn-outline" id="simDowngrade"><i class="fas fa-arrow-down"></i> Downgrade to Basic</button>
+                        <button class="btn-primary" id="simUpgrade" style="width: auto; padding: 0.6rem 1.5rem;">Upgrade to Enterprise (sim)</button>
+                    </div>
+                    <p class="footer-note" style="margin-top: 1rem;"><i class="fas fa-sync-alt"></i> Simulation only — no actual charge.</p>
+                </div>`;
+            } else if (tabId === 'systemUsage') {
+                html = `<h3><i class="fas fa-chart-simple"></i> System usage & monitoring</h3>
+                <div style="margin: 1.8rem 0;">
+                    <div><span>CPU / server load</span><div class="usage-bar" style="margin-top:5px;"><div class="usage-fill" style="width: 34%;"></div></div></div>
+                    <div style="margin-top: 1.2rem;"><span>Storage (DB)  2.1 GB / 5 GB</span><div class="usage-bar"><div class="usage-fill" style="width: 42%;"></div></div></div>
+                    <div style="margin-top: 1.2rem;"><span>Active sessions: 9</span></div>
+                </div>
+                <div class="info-note"><i class="fas fa-microchip"></i> System logs: no anomalies, 99.7% uptime.</div>`;
+            }
+            adminTabContent.innerHTML = html;
+
+            // attach simple sim events (buttons inside tab)
+            if (tabId === 'manageDoctors') {
+                document.getElementById('simAddDoctor')?.addEventListener('click', ()=>{
+                    doctors.push({ id: Date.now(), name: 'Dr. A. Nova', specialty: 'General', patients: 57 });
+                    renderAdminTab('manageDoctors');
+                });
+            }
+            if (tabId === 'manageRecipients') {
+                document.getElementById('simAddRecipient')?.addEventListener('click', ()=>{
+                    recipients.push({ id: Date.now(), name: 'Sunrise Clinic', type: 'Recipient', samples: 15 });
+                    renderAdminTab('manageRecipients');
+                });
+            }
+            if (tabId === 'subscription') {
+                document.getElementById('simDowngrade')?.addEventListener('click', ()=> alert('🔁 Simulation: plan changed to Basic.'));
+                document.getElementById('simUpgrade')?.addEventListener('click', ()=> alert('⭐ Simulation: upgraded to Enterprise.'));
+            }
+        }
+
+        // ----- switch admin tabs -----
+        function setActiveAdminTab(tabId) {
+            adminTabButtons.forEach(btn => {
+                const t = btn.getAttribute('data-tab');
+                if (t === tabId) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            renderAdminTab(tabId);
+        }
+
+        // ----- login / logout functions -----
+        function loginAsAdmin() {
+            currentUser = { email: 'admin@clinic.com', role: 'admin', name: 'Admin User' };
+            authSection.style.display = 'none';
+            adminPanel.style.display = 'block';
+            roleHeader.innerText = 'Admin (full access)';
+            setActiveAdminTab('manageDoctors'); // default tab
+        }
+
+        function logout() {
+            currentUser = null;
+            authSection.style.display = 'block';
+            adminPanel.style.display = 'none';
+            roleHeader.innerText = 'Not logged in';
+            // reset to login tab
+            showLoginTab();
+        }
+
+        // ----- toggle login/signup tabs -----
+        function showLoginTab() {
+            loginTabBtn.classList.add('active');
+            signupTabBtn.classList.remove('active');
+            loginFormDiv.style.display = 'block';
+            signupFormDiv.style.display = 'none';
+        }
+        function showSignupTab() {
+            signupTabBtn.classList.add('active');
+            loginTabBtn.classList.remove('active');
+            loginFormDiv.style.display = 'none';
+            signupFormDiv.style.display = 'block';
+        }
+
+        // ----- event listeners -----
+        loginTabBtn.addEventListener('click', showLoginTab);
+        signupTabBtn.addEventListener('click', showSignupTab);
+
+        // login action
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pwd = document.getElementById('loginPassword').value;
+            // simple check: if email includes admin (demo)
+            if (email === 'admin@clinic.com') {
+                loginAsAdmin();
+            } else {
+                // simulate any other login (non-admin) – just show message, keep auth visible
+                alert(`Logged in as ${email || 'user'} (non-admin). Admin panel requires admin@clinic.com`);
+                // but we update header to some role? we'll extract role from somewhere? just mock
+                const fakeRole = email.includes('doctor') ? 'doctor' : 'patient';
+                roleHeader.innerText = fakeRole.charAt(0).toUpperCase() + fakeRole.slice(1) + ' (demo)';
+                // stay in auth section (admin panel not shown)
+            }
+        });
+
+        // signup action
+        signupBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value || 'Unknown';
+            const email = document.getElementById('signupEmail').value || 'unknown@mail.com';
+            const role = document.getElementById('signupRole').value;
+            alert(`✅ Account created for ${name} (Role: ${role}). You can now log in.\n(Use admin@clinic.com for admin panel.)`);
+            // switch to login
+            showLoginTab();
+        });
+
+        // logout
+        logoutBtn.addEventListener('click', logout);
+
+        // admin tab switching
+        adminTabButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tabId = btn.getAttribute('data-tab');
+                setActiveAdminTab(tabId);
+            });
+        });
+
+        // initial state
+        logout(); // ensures auth visible, admin hidden
+
+        // if someone clicks outside simulation we keep it clean
+        window.addEventListener('load', ()=>{
+            // prefill demo hint
+        });
+    })();
+</script>
+<!-- small extra note -->
+</body>
+</html>

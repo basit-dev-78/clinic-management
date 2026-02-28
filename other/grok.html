@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shlafee Medicare · Professional Clinic Suite</title>
+  <!-- Font Awesome 6 (Pro icons free) & Google Font Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(145deg, #eef2f7 0%, #d9e2ef 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* main app container — glassmorphism */
+    .app-container {
+      width: 1440px;
+      max-width: 100%;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 48px;
+      box-shadow: 0 40px 70px -15px rgba(0,45,85,0.3), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.2s ease;
+    }
+
+    /* header with dynamic auth */
+    .app-header {
+      padding: 22px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,60,110,0.08);
+      background: rgba(255,255,255,0.5);
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-icon {
+      background: #0b3b5c;
+      background: linear-gradient(145deg, #0b3b5c, #1a5f8a);
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: white;
+      box-shadow: 0 12px 18px -8px rgba(0,80,120,0.4);
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 26px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #103c5c, #216795);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* auth section */
+    .auth-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #1f5e8e;
+      border-radius: 40px;
+      padding: 10px 26px;
+      font-weight: 600;
+      color: #1f5e8e;
+      transition: 0.2s;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .btn-outline:hover {
+      background: #1f5e8e10;
+      border-color: #0b3b5c;
+    }
+
+    .btn-primary {
+      background: #1a5f8a;
+      border: none;
+      border-radius: 40px;
+      padding: 10px 28px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 16px -6px #1a5f8a60;
+      transition: 0.2s;
+      border: 1px solid #ffffff40;
+    }
+
+    .btn-primary:hover {
+      background: #0f4970;
+      transform: scale(1.02);
+    }
+
+    .user-badge {
+      background: white;
+      border-radius: 60px;
+      padding: 8px 20px 8px 16px;
+      box-shadow: 0 10px 18px -12px #0a3144;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #cbddea;
+    }
+
+    .user-avatar {
+      background: #1f5e8e;
+      width: 38px;
+      height: 38px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    .user-info {
+      font-weight: 600;
+      color: #143850;
+    }
+
+    .logout-icon {
+      color: #7b98af;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1.2rem;
+    }
+
+    .logout-icon:hover {
+      color: #b22234;
+    }
+
+    /* layout : sidebar + main */
+    .dashboard-layout {
+      display: flex;
+      min-height: 700px;
+    }
+
+    /* SIDEBAR — sleek glass */
+    .sidebar {
+      width: 260px;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(8px);
+      padding: 28px 12px;
+      border-right: 1px solid rgba(0,70,120,0.1);
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      margin: 6px 8px;
+      border-radius: 22px;
+      color: #1e405b;
+      font-weight: 500;
+      transition: 0.2s;
+      cursor: default;
+    }
+
+    .sidebar-item i {
+      width: 26px;
+      font-size: 1.3rem;
+      color: #2b5f86;
+    }
+
+    .sidebar-item.active {
+      background: rgba(26, 95, 138, 0.2);
+      box-shadow: 0 6px 12px -8px #114369;
+      font-weight: 600;
+      color: #0a2e45;
+      border-left: 4px solid #1a5f8a;
+    }
+
+    /* MAIN content area */
+    .main-content {
+      flex: 1;
+      padding: 32px 36px;
+      background: rgba(255,255,255,0.4);
+    }
+
+    /* analytics summary cards (top right) */
+    .stats-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 30px;
+      background: rgba(255,255,255,0.7);
+      padding: 24px 28px;
+      border-radius: 36px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.9);
+    }
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 140px;
+    }
+
+    .stat-icon {
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(135deg, #e7f0fd, #d3e4fc);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1f5e8e;
+      font-size: 26px;
+    }
+
+    .stat-content h3 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0b3147;
+      line-height: 1.2;
+    }
+
+    .stat-content span {
+      color: #55799b;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    /* date/time bar */
+    .datetime-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.7);
+      border-radius: 60px;
+      padding: 10px 24px;
+      margin: 24px 0 32px;
+      border: 1px solid #ffffff;
+    }
+
+    .date-picker {
+      background: white;
+      border-radius: 40px;
+      padding: 12px 28px;
+      font-weight: 600;
+      color: #1a4d72;
+      box-shadow: 0 6px 12px -8px #abc0d0;
+    }
+
+    .time-slider {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .slider-digits {
+      display: flex;
+      gap: 25px;
+      font-weight: 700;
+      color: #2b5f86;
+    }
+
+    .slider-digits span {
+      background: white;
+      padding: 8px 16px;
+      border-radius: 36px;
+      box-shadow: 0 4px 10px -6px #5f7d9c;
+    }
+
+    .go-to-btn {
+      background: white;
+      border: none;
+      padding: 12px 40px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #1a5f8a;
+      border: 1px solid #cee0ee;
+      box-shadow: 0 6px 14px -10px #0e3b58;
+      cursor: default;
+    }
+
+    /* appointment + calendar bottom left */
+    .bottom-panels {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-appointments {
+      background: white;
+      border-radius: 38px;
+      padding: 26px;
+      width: 400px;
+      max-width: 100%;
+      box-shadow: 0 25px 40px -18px #9bb4cc;
+    }
+
+    .weekdays {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      text-align: center;
+      font-weight: 700;
+      color: #32658c;
+      margin-bottom: 18px;
+    }
+
+    .appointment-list {
+      margin-top: 16px;
+    }
+
+    .appointment-card {
+      background: #f4fbff;
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-left: 6px solid #1a5f8a;
+      box-shadow: 0 10px 18px -14px #315d7c;
+    }
+
+    .appt-time {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      color: #0e3d5e;
+      margin-bottom: 12px;
+    }
+
+    .confirmed {
+      background: #c6e2c9;
+      color: #1c6b3f;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+    }
+
+    .appt-detail-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .detail-label {
+      color: #617e9c;
+    }
+
+    /* ADMIN PANEL (professional tabs) */
+    .admin-section {
+      flex: 1;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 38px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 20px 30px -18px #334e68;
+    }
+
+    .admin-tabs-header {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 2px solid rgba(26,95,138,0.2);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+    }
+
+    .admin-tab-btn {
+      background: transparent;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #1a4d72;
+      transition: 0.2s;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .admin-tab-btn i {
+      margin-right: 8px;
+    }
+
+    .admin-tab-btn.active {
+      background: #1a5f8a;
+      color: white;
+      box-shadow: 0 8px 16px -8px #13486b;
+    }
+
+    .admin-content-card {
+      background: white;
+      border-radius: 28px;
+      padding: 28px;
+      min-height: 260px;
+      box-shadow: inset 0 2px 6px #00000008, 0 20px 30px -20px #a2b9d0;
+    }
+
+    /* dynamic inner tables / cards */
+    .manage-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f6faff;
+      padding: 16px 20px;
+      border-radius: 40px;
+      margin-bottom: 12px;
+    }
+
+    .badge-sim {
+      background: #e7f0fc;
+      color: #154f79;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-weight: 500;
+    }
+
+    .sim-input {
+      border: 1px solid #c3d9ec;
+      border-radius: 40px;
+      padding: 10px 22px;
+      background: white;
+    }
+
+    .analytics-metrics {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .metric-tile {
+      background: #e7f0fd;
+      border-radius: 26px;
+      padding: 24px;
+      min-width: 160px;
+    }
+
+    /* MODAL for login/register — modern glass */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,30,50,0.3);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .modal-card {
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(16px);
+      border-radius: 56px;
+      padding: 48px;
+      width: 460px;
+      max-width: 90%;
+      box-shadow: 0 50px 70px -20px #001e30;
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .modal-card h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0b3650;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 22px;
+    }
+
+    .field label {
+      font-weight: 600;
+      color: #20507a;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 16px 24px;
+      border-radius: 50px;
+      border: 1px solid #bfd8f0;
+      font-size: 1rem;
+      background: white;
+    }
+
+    .switch-link {
+      color: #1a5f8a;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    hr {
+      margin: 24px 0;
+      border: 1px solid rgba(0,70,120,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container" id="appContainer">
+    <!-- header with auth -->
+    <div class="app-header">
+      <div class="logo-group">
+        <div class="logo-icon"><i class="fas fa-star-of-life"></i></div>
+        <span class="logo-text">shlafeemedicare</span>
+      </div>
+      <div class="auth-section" id="authSection"></div>
+    </div>
+
+    <div class="dashboard-layout">
+      <!-- sidebar (exact as per spec) -->
+      <div class="sidebar">
+        <div class="sidebar-item active"><i class="fas fa-th-large"></i> Dashboard</div>
+        <div class="sidebar-item"><i class="fas fa-building"></i> Departments</div>
+        <div class="sidebar-item"><i class="fas fa-user-md"></i> Doctor</div>
+        <div class="sidebar-item"><i class="fas fa-user-injured"></i> Patient</div>
+        <div class="sidebar-item"><i class="fas fa-calendar-alt"></i> Schedule</div>
+        <div class="sidebar-item"><i class="fas fa-clock"></i> Appointment</div>
+        <div class="sidebar-item"><i class="fas fa-users"></i> Human Resources</div>
+        <div class="sidebar-item"><i class="fas fa-prescription"></i> Prescription</div>
+        <div class="sidebar-item"><i class="fas fa-flask"></i> Lab Tests</div>
+        <div class="sidebar-item"><i class="fas fa-pills"></i> Pharmacy</div>
+      </div>
+
+      <!-- main content -->
+      <div class="main-content" id="mainContent">
+        <!-- stats row -->
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-day"></i></div><div class="stat-content"><h3>2</h3><span>Today</span></div></div>
+          <div class="stat-card"><div class="stat-icon"><i class="fas fa-history"></i></div><div class="stat-content"><h3>0</h3><span>Case History</span></div></div>
+          <div class="stat-card"><div class="stat-icon"><i class="fas fa-user-injured"></i></div><div class="stat-content"><h3>2</h3><span>Patient</span></div></div>
+          <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-content"><h3>2</h3><span>Appointment</span></div></div>
+          <div class="stat-card"><div class="stat-icon"><i class="fas fa-file-alt"></i></div><div class="stat-content"><h3>0</h3><span>Documents</span></div></div>
+        </div>
+
+        <!-- date picker + slider + go to -->
+        <div class="datetime-bar">
+          <div class="date-picker"><i class="far fa-calendar-alt"></i> today · June 2023 <i class="fas fa-chevron-down"></i></div>
+          <div class="time-slider">
+            <i class="far fa-clock"></i>
+            <div class="slider-digits"><span>30</span><span>31</span><span>1</span><span>2</span><span>3</span></div>
+          </div>
+          <button class="go-to-btn">Go to <i class="fas fa-arrow-right"></i></button>
+        </div>
+
+        <!-- bottom area: appointments + admin panel placeholder -->
+        <div class="bottom-panels">
+          <!-- left: week calendar + appointment cards (exact) -->
+          <div class="calendar-appointments">
+            <div class="weekdays">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="appointment-list">
+              <div class="appointment-card">
+                <div class="appt-time"><span>10:40 AM · 11</span> <span class="confirmed">Confirmed</span></div>
+                <div class="appt-detail-grid">
+                  <span class="detail-label">Patients:</span><span>Aaron</span>
+                  <span class="detail-label">Phone:</span><span>931.2513</span>
+                  <span class="detail-label">Doctor:</span><span>Dr. Ben</span>
+                  <span class="detail-label">Remarks:</span><span>—</span>
+                </div>
+              </div>
+              <div class="appointment-card">
+                <div class="appt-time"><span>6:26 PM · 6:49</span> <span class="confirmed">Confirmed</span></div>
+                <div class="appt-detail-grid">
+                  <span class="detail-label">Patients:</span><span>Omar</span>
+                  <span class="detail-label">Phone:</span><span>939.9919</span>
+                  <span class="detail-label">Doctor:</span><span>Dr. Gur</span>
+                  <span class="detail-label">Remarks:</span><span>—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- right side: admin panel will be injected by js if role=admin -->
+          <div class="admin-section" id="adminPanelContainer">
+            <!-- default message / login prompt -->
+            <div style="text-align: center; padding: 40px 20px; color: #2b5f86;">
+              <i class="fas fa-user-lock" style="font-size: 48px; opacity: 0.6;"></i>
+              <h3 style="margin-top: 16px;">Login as Admin to access management</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2>welcome back</h2>
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="admin@clinic.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="······"></div>
+      <div class="field"><label>Role</label>
+        <select id="loginRole">
+          <option value="admin">Admin</option><option value="doctor">Doctor</option><option value="patient">Patient</option><option value="receptionist">Receptionist</option>
+        </select>
+      </div>
+      <button class="btn-primary" style="width:100%; padding:16px;" id="loginBtn">Sign in</button>
+      <hr>
+      <p style="text-align:center;">No account? <span class="switch-link" id="switchToRegister">Create account</span></p>
+    </div>
+  </div>
+
+  <!-- REGISTER MODAL -->
+  <div id="registerModal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2>join shlafee</h2>
+      <div class="field"><label>Full name</label><input type="text" id="regName" placeholder="Dr. James"></div>
+      <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="james@clinic.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="regPassword" placeholder="min 6 chars"></div>
+      <div class="field"><label>Role</label>
+        <select id="regRole">
+          <option value="admin">Admin</option><option value="doctor">Doctor</option><option value="patient">Patient</option><option value="receptionist">Receptionist</option>
+        </select>
+      </div>
+      <button class="btn-primary" style="width:100%; padding:16px;" id="registerBtn">Register</button>
+      <hr>
+      <p style="text-align:center;">Already have an account? <span class="switch-link" id="switchToLogin">Login</span></p>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- STATE ----------
+      let currentUser = null;   // { name, email, role }
+
+      const authSection = document.getElementById('authSection');
+      const loginModal = document.getElementById('loginModal');
+      const registerModal = document.getElementById('registerModal');
+      const adminPanel = document.getElementById('adminPanelContainer');
+
+      // show/hide modals
+      function showModal(modal) {
+        loginModal.classList.add('hidden');
+        registerModal.classList.add('hidden');
+        modal.classList.remove('hidden');
+      }
+      function hideModals() {
+        loginModal.classList.add('hidden');
+        registerModal.classList.add('hidden');
+      }
+
+      // RENDER AUTH SECTION
+      function renderAuth() {
+        if (!currentUser) {
+          authSection.innerHTML = `<div style="display:flex; gap:10px;">
+            <button class="btn-outline" id="showLoginBtn">Log in</button>
+            <button class="btn-primary" id="showRegisterBtn">Sign up</button>
+          </div>`;
+          document.getElementById('showLoginBtn')?.addEventListener('click', ()=> showModal(loginModal));
+          document.getElementById('showRegisterBtn')?.addEventListener('click', ()=> showModal(registerModal));
+        } else {
+          const initial = currentUser.name.charAt(0).toUpperCase();
+          authSection.innerHTML = `<div class="user-badge">
+            <div class="user-avatar">${initial}</div>
+            <span class="user-info">${currentUser.name} (${currentUser.role})</span>
+            <i class="fas fa-sign-out-alt logout-icon" id="logoutBtn"></i>
+          </div>`;
+          document.getElementById('logoutBtn')?.addEventListener('click', ()=> {
+            currentUser = null;
+            renderAuth();
+            renderAdminPanelContent();
+            hideModals();
+          });
+        }
+      }
+
+      // ADMIN PANEL RENDER (FULLY FUNCTIONAL TABS)
+      function renderAdminPanelContent() {
+        if (currentUser && currentUser.role === 'admin') {
+          // build sophisticated admin tabs
+          adminPanel.innerHTML = `
+            <div style="width:100%;">
+              <div class="admin-tabs-header">
+                <button class="admin-tab-btn active" data-tab="doctors"><i class="fas fa-user-md"></i> Manage doctors</button>
+                <button class="admin-tab-btn" data-tab="recept"><i class="fas fa-headset"></i> Manage receptionists</button>
+                <button class="admin-tab-btn" data-tab="analytics"><i class="fas fa-chart-line"></i> View analytics</button>
+                <button class="admin-tab-btn" data-tab="subscription"><i class="fas fa-credit-card"></i> Subscription plan</button>
+                <button class="admin-tab-btn" data-tab="system"><i class="fas fa-microchip"></i> System usage</button>
+              </div>
+              <div class="admin-content-card" id="adminTabContent">
+                <!-- dynamic tab content, default to doctors -->
+                <div>
+                  <div class="manage-row"><span><i class="fas fa-user-md" style="width:30px;"></i> Dr. Sarah Chen (Cardiology)</span> <span class="badge-sim">active</span> <i class="fas fa-ellipsis-v"></i></div>
+                  <div class="manage-row"><span><i class="fas fa-user-md"></i> Dr. Marcus Webb (Neurology)</span> <span class="badge-sim">active</span> <i class="fas fa-ellipsis-v"></i></div>
+                  <div class="manage-row"><span><i class="fas fa-user-md"></i> Dr. Lina Kovac (Pediatrics)</span> <span class="badge-sim">on leave</span> <i class="fas fa-ellipsis-v"></i></div>
+                  <div style="margin-top:24px;"><span class="sim-input"><i class="fas fa-plus"></i> add new doctor (simulated)</span></div>
+                </div>
+              </div>
+            </div>
+          `;
+          attachTabListeners();
+        } else {
+          // show default message
+          adminPanel.innerHTML = `<div style="text-align: center; padding: 40px 20px; color: #2b5f86;">
+            <i class="fas fa-user-lock" style="font-size: 48px; opacity: 0.6;"></i>
+            <h3 style="margin-top: 16px;">${!currentUser ? 'Login to access admin functions' : 'You are logged in as '+currentUser.role+' · admin area restricted'}</h3>
+          </div>`;
+        }
+      }
+
+      function attachTabListeners() {
+        const tabs = document.querySelectorAll('.admin-tab-btn');
+        const contentDiv = document.getElementById('adminTabContent');
+        if (!tabs.length || !contentDiv) return;
+
+        const tabContentMap = {
+          doctors: `<div><div class="manage-row"><span><i class="fas fa-user-md"></i> Dr. Sarah Chen (Cardiology)</span> <span class="badge-sim">active</span></div>
+          <div class="manage-row"><span><i class="fas fa-user-md"></i> Dr. Marcus Webb (Neurology)</span> <span class="badge-sim">active</span></div>
+          <div class="manage-row"><span><i class="fas fa-user-md"></i> Dr. Lina Kovac (Pediatrics)</span> <span class="badge-sim">on leave</span></div>
+          <div style="margin-top:20px;"><span class="sim-input"><i class="fas fa-plus"></i> add doctor simulation</span></div></div>`,
+
+          recept: `<div><div class="manage-row"><span><i class="fas fa-headset"></i> Emma Watson (Chief)</span> <span class="badge-sim">admin</span></div>
+          <div class="manage-row"><span><i class="fas fa-headset"></i> James Lee (Evening)</span> <span class="badge-sim">active</span></div>
+          <div style="margin-top:20px;"><span class="sim-input"><i class="fas fa-plus"></i> add receptionist</span></div></div>`,
+
+          analytics: `<div class="analytics-metrics">
+            <div class="metric-tile"><h3>248</h3><span>appointments (month)</span></div>
+            <div class="metric-tile"><h3>32</h3><span>new patients</span></div>
+            <div class="metric-tile"><h3>89%</h3><span>occupancy</span></div>
+          </div>`,
+
+          subscription: `<div><div class="manage-row"><span>💰 current plan: <strong>Clinic Professional</strong></span> <span class="badge-sim">annual</span></div>
+          <div class="manage-row"><span>next billing: Aug 15, 2023</span> <span class="badge-sim">auto renew</span></div>
+          <div style="margin-top:24px;"><span class="sim-input"><i class="fas fa-arrow-up"></i> simulate upgrade to Enterprise</span></div></div>`,
+
+          system: `<div><div class="manage-row"><span><i class="fas fa-cpu"></i> CPU usage 43% · RAM 2.8/8 GB</span><span class="badge-sim">stable</span></div>
+          <div class="manage-row"><span>👥 active users: 12 (6 doctors, 4 staff, 2 admins)</span></div>
+          <div class="manage-row"><span>📊 disk usage 126/250 GB</span><progress value="50" max="100" style="width:200px;"></progress></div>
+          <div style="margin-top:16px;"><span class="sim-input">↻ refresh monitoring (sim)</span></div></div>`
+        };
+
+        tabs.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            tabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const tab = btn.dataset.tab;
+            if (tab && tabContentMap[tab]) contentDiv.innerHTML = tabContentMap[tab];
+            else contentDiv.innerHTML = `<div>info</div>`;
+          });
+        });
+      }
+
+      // EVENT LISTENERS login/register
+      document.getElementById('loginBtn').addEventListener('click', ()=> {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pass = document.getElementById('loginPassword').value.trim();
+        const role = document.getElementById('loginRole').value;
+        if (!email || !pass) return alert('Please fill all fields');
+        const name = email.split('@')[0] || 'Admin';
+        currentUser = { name, email, role };
+        renderAuth();
+        hideModals();
+        renderAdminPanelContent();
+      });
+
+      document.getElementById('registerBtn').addEventListener('click', ()=> {
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const pass = document.getElementById('regPassword').value.trim();
+        const role = document.getElementById('regRole').value;
+        if (!name || !email || !pass) return alert('all fields required');
+        currentUser = { name, email, role };
+        renderAuth();
+        hideModals();
+        renderAdminPanelContent();
+      });
+
+      document.getElementById('switchToRegister').addEventListener('click', ()=> showModal(registerModal));
+      document.getElementById('switchToLogin').addEventListener('click', ()=> showModal(loginModal));
+
+      window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) hideModals();
+      });
+
+      // initial renders
+      renderAuth();
+      renderAdminPanelContent();
+
+      // prefills for convenience
+      document.getElementById('loginEmail')?.addEventListener('focus', (e) => e.target.value = 'admin@shlafee.com');
+    })();
+  </script>
+</body>
+</html>

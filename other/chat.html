@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Clinic Management System</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6f9;
+}
+
+/* LOGIN / REGISTER */
+.auth-container{
+    width:350px;
+    margin:80px auto;
+    background:#fff;
+    padding:25px;
+    border-radius:6px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+.auth-container h2{
+    text-align:center;
+}
+.auth-container input, select{
+    width:100%;
+    padding:8px;
+    margin:8px 0;
+}
+.auth-container button{
+    width:100%;
+    padding:10px;
+    background:#00a65a;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+}
+.link{
+    text-align:center;
+    cursor:pointer;
+    color:blue;
+}
+
+/* DASHBOARD LAYOUT */
+#dashboard{
+    display:none;
+}
+.sidebar{
+    width:220px;
+    height:100vh;
+    background:#1e282c;
+    position:fixed;
+    color:#fff;
+}
+.sidebar h2{
+    text-align:center;
+    padding:15px;
+    background:#00a65a;
+}
+.sidebar ul{
+    list-style:none;
+    padding:0;
+}
+.sidebar ul li{
+    padding:12px;
+    cursor:pointer;
+}
+.sidebar ul li:hover{
+    background:#2c3b41;
+}
+
+.main{
+    margin-left:220px;
+    padding:20px;
+}
+.top-cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+.card{
+    padding:20px;
+    color:#fff;
+    border-radius:6px;
+}
+.green{background:#00a65a;}
+.blue{background:#0073b7;}
+.yellow{background:#f39c12;}
+.red{background:#dd4b39;}
+
+.section{
+    margin-top:30px;
+    background:#fff;
+    padding:20px;
+    border-radius:6px;
+    display:none;
+}
+.active-section{
+    display:block;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+}
+button.small{
+    padding:5px 10px;
+    font-size:12px;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="auth-container" id="loginBox">
+<h2>Login</h2>
+<input type="text" id="loginEmail" placeholder="Email">
+<input type="password" id="loginPass" placeholder="Password">
+<button onclick="login()">Login</button>
+<p class="link" onclick="showRegister()">Create Account</p>
+</div>
+
+<!-- REGISTER -->
+<div class="auth-container" id="registerBox" style="display:none;">
+<h2>Create Account</h2>
+<input type="text" id="regName" placeholder="Full Name">
+<input type="email" id="regEmail" placeholder="Email">
+<input type="password" id="regPass" placeholder="Password">
+<select id="regRole">
+<option value="Admin">Admin</option>
+<option value="Doctor">Doctor</option>
+<option value="Patient">Patient</option>
+<option value="Receptionist">Receptionist</option>
+</select>
+<button onclick="register()">Register</button>
+<p class="link" onclick="showLogin()">Back to Login</p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+<div class="sidebar">
+<h2>Clinic Panel</h2>
+<ul id="menu">
+<li onclick="showSection('home')">Dashboard</li>
+<li onclick="showSection('manageDoctors')">Manage Doctors</li>
+<li onclick="showSection('manageReception')">Manage Receptionists</li>
+<li onclick="showSection('analytics')">View Analytics</li>
+<li onclick="showSection('subscription')">Manage Subscription</li>
+<li onclick="showSection('usage')">Monitor Usage</li>
+<li onclick="logout()">Logout</li>
+</ul>
+</div>
+
+<div class="main">
+<h2 id="welcome"></h2>
+
+<div class="top-cards">
+<div class="card green"><h3 id="totalDoctors">0</h3> Doctors</div>
+<div class="card blue"><h3 id="totalPatients">0</h3> Patients</div>
+<div class="card yellow"><h3 id="totalReception">0</h3> Receptionists</div>
+<div class="card red"><h3 id="totalUsers">0</h3> Total Users</div>
+</div>
+
+<!-- SECTIONS -->
+<div id="home" class="section active-section">
+<h3>System Overview</h3>
+<p>Welcome to Clinic Management System Admin Panel.</p>
+</div>
+
+<div id="manageDoctors" class="section">
+<h3>Manage Doctors</h3>
+<table id="doctorTable"></table>
+</div>
+
+<div id="manageReception" class="section">
+<h3>Manage Receptionists</h3>
+<table id="recTable"></table>
+</div>
+
+<div id="analytics" class="section">
+<h3>Analytics</h3>
+<p>Total Registered Users: <span id="analyticsUsers"></span></p>
+</div>
+
+<div id="subscription" class="section">
+<h3>Subscription Plans (Simulation)</h3>
+<select id="planSelect">
+<option>Free</option>
+<option>Basic</option>
+<option>Premium</option>
+</select>
+<button onclick="savePlan()">Save Plan</button>
+<p>Current Plan: <span id="currentPlan"></span></p>
+</div>
+
+<div id="usage" class="section">
+<h3>System Usage</h3>
+<p>Logins Count: <span id="loginCount"></span></p>
+</div>
+
+</div>
+</div>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let loginCounter = localStorage.getItem("logins") || 0;
+
+function showRegister(){
+    loginBox.style.display="none";
+    registerBox.style.display="block";
+}
+function showLogin(){
+    loginBox.style.display="block";
+    registerBox.style.display="none";
+}
+
+function register(){
+    let name=regName.value;
+    let email=regEmail.value;
+    let pass=regPass.value;
+    let role=regRole.value;
+    users.push({name,email,pass,role});
+    localStorage.setItem("users",JSON.stringify(users));
+    alert("Account Created");
+    showLogin();
+}
+
+function login(){
+    let email=loginEmail.value;
+    let pass=loginPass.value;
+    let user=users.find(u=>u.email==email && u.pass==pass);
+    if(user){
+        localStorage.setItem("currentUser",JSON.stringify(user));
+        loginCounter++;
+        localStorage.setItem("logins",loginCounter);
+        loadDashboard();
+    }else{
+        alert("Invalid Credentials");
+    }
+}
+
+function loadDashboard(){
+    loginBox.style.display="none";
+    registerBox.style.display="none";
+    dashboard.style.display="block";
+    let user=JSON.parse(localStorage.getItem("currentUser"));
+    welcome.innerText="Welcome "+user.name+" ("+user.role+")";
+
+    updateCounts();
+    if(user.role!=="Admin"){
+        document.getElementById("menu").innerHTML="<li onclick='logout()'>Logout</li>";
+    }
+}
+
+function logout(){
+    localStorage.removeItem("currentUser");
+    location.reload();
+}
+
+function updateCounts(){
+    totalDoctors.innerText=users.filter(u=>u.role=="Doctor").length;
+    totalPatients.innerText=users.filter(u=>u.role=="Patient").length;
+    totalReception.innerText=users.filter(u=>u.role=="Receptionist").length;
+    totalUsers.innerText=users.length;
+    analyticsUsers.innerText=users.length;
+    loginCount.innerText=loginCounter;
+    currentPlan.innerText=localStorage.getItem("plan") || "Free";
+    loadTables();
+}
+
+function loadTables(){
+    let doctors=users.filter(u=>u.role=="Doctor");
+    doctorTable.innerHTML="<tr><th>Name</th><th>Email</th></tr>";
+    doctors.forEach(d=>{
+        doctorTable.innerHTML+=`<tr><td>${d.name}</td><td>${d.email}</td></tr>`;
+    });
+
+    let rec=users.filter(u=>u.role=="Receptionist");
+    recTable.innerHTML="<tr><th>Name</th><th>Email</th></tr>";
+    rec.forEach(r=>{
+        recTable.innerHTML+=`<tr><td>${r.name}</td><td>${r.email}</td></tr>`;
+    });
+}
+
+function showSection(id){
+    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active-section"));
+    document.getElementById(id).classList.add("active-section");
+}
+
+function savePlan(){
+    localStorage.setItem("plan",planSelect.value);
+    updateCounts();
+}
+
+if(localStorage.getItem("currentUser")){
+    loadDashboard();
+}
+</script>
+
+</body>
+</html>

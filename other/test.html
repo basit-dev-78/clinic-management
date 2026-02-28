@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shifaa Medicare · dashboard</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #eef2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        /* main container – exactly like the described layout */
+        .clinic-dashboard {
+            max-width: 1360px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 45px -10px rgba(0, 35, 55, 0.2);
+            display: flex;
+            overflow: hidden;
+            height: 90vh;
+            max-height: 880px;
+        }
+
+        /* ========== SIDEBAR (left) ========== */
+        .sidebar {
+            width: 260px;
+            background: #f9fcff;   /* very light, almost white with subtle blue */
+            border-right: 1px solid #dde7f0;
+            padding: 1.8rem 1rem 1.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-area {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #115e83;
+            margin-bottom: 2rem;
+            padding-left: 0.5rem;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-area i {
+            color: #1f7b9e;
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.7rem 0.7rem 0.7rem 0.8rem;
+            margin: 4px 0;
+            border-radius: 14px;
+            color: #2c4e66;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: 0.15s;
+            cursor: default;
+        }
+
+        .nav-item i {
+            width: 22px;
+            font-size: 1.1rem;
+            color: #4d728b;
+        }
+
+        .nav-item.active {
+            background: #e1eff9;
+            color: #0b4b6b;
+            font-weight: 600;
+        }
+
+        .nav-item.active i {
+            color: #136f96;
+        }
+
+        .nav-item:not(.active):hover {
+            background: #ecf3f9;
+        }
+
+        .sidebar-footer {
+            font-size: 0.75rem;
+            color: #5f7d95;
+            padding: 1rem 0.5rem;
+            border-top: 1px solid #d5e1ec;
+            margin-top: 1rem;
+        }
+
+        /* ========== MAIN PANEL (right) ========== */
+        .main-panel {
+            flex: 1;
+            background: #ffffff;
+            padding: 1.8rem 2rem 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* header row: "Calendar · Today" and small icons */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+        }
+
+        .panel-header h2 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #122f40;
+            letter-spacing: -0.5px;
+        }
+
+        .panel-header h2 span {
+            font-weight: 400;
+            color: #537f9b;
+            font-size: 1.3rem;
+            margin-left: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            color: #3b6d8c;
+        }
+
+        /* day labels row (Sun, Mon, Tue ...) */
+        .weekdays {
+            display: flex;
+            gap: 0.8rem;
+            background: #f6fafd;
+            padding: 0.7rem 1.2rem;
+            border-radius: 40px;
+            width: fit-content;
+            border: 1px solid #d4e2ef;
+            margin-bottom: 2rem;
+        }
+
+        .weekday {
+            font-weight: 500;
+            color: #315f79;
+            background: transparent;
+            padding: 0.3rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
+        }
+
+        .weekday.active-day {
+            background: #d4e7f3;
+            color: #0f4d6b;
+            font-weight: 600;
+        }
+
+        /* two cards: appointments & documents */
+        .quick-cards {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 2.2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-card {
+            background: #f2f8fe;
+            border-radius: 22px;
+            padding: 1rem 1.8rem 1rem 1.8rem;
+            border: 1px solid #cde0ed;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quick-card i {
+            font-size: 1.5rem;
+            color: #11698e;
+        }
+
+        .quick-card span {
+            font-weight: 600;
+            color: #124a66;
+            font-size: 1.1rem;
+        }
+
+        /* appointments table (exactly as described) */
+        .appointments-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #11374b;
+            margin-bottom: 1.2rem;
+            letter-spacing: -0.2px;
+        }
+
+        .appointments-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 35, 55, 0.05);
+        }
+
+        .appointments-table th {
+            text-align: left;
+            padding: 1rem 0.8rem 0.8rem 1.5rem;
+            font-weight: 600;
+            color: #1b577b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid #c9ddec;
+        }
+
+        .appointments-table td {
+            padding: 0.9rem 0.8rem 0.9rem 1.5rem;
+            border-bottom: 1px solid #e3eef8;
+            color: #1d4055;
+            font-weight: 500;
+        }
+
+        .appointments-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            background: #d9f0e1;
+            color: #0f6a47;
+            padding: 0.25rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-badge.closed {
+            background: #edf2f7;
+            color: #4c6579;
+        }
+
+        /* footer with "Go to" and page indicator */
+        .dashboard-footer {
+            margin-top: auto;
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #4d6f89;
+            font-size: 0.9rem;
+        }
+
+        .go-to {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .go-to i {
+            color: #658ca5;
+            font-size: 0.9rem;
+        }
+
+        .page-indicator {
+            background: #e4eef7;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #144e6e;
+        }
+
+        /* additional micro style */
+        .separator-dot {
+            width: 4px;
+            height: 4px;
+            background: #b0c9dd;
+            border-radius: 50%;
+            margin: 0 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="clinic-dashboard">
+    <!-- SIDEBAR (left) : Dashboard, Departments, Doctor, Patient, Schedule ... -->
+    <div class="sidebar">
+        <div class="logo-area">
+            <i class="fas fa-star-of-life"></i> shifaeemedicare
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active"><i class="fas fa-chart-pie"></i> Dashboard</li>
+            <li class="nav-item"><i class="fas fa-building"></i> Departments</li>
+            <li class="nav-item"><i class="fas fa-user-md"></i> Doctor</li>
+            <li class="nav-item"><i class="fas fa-user-injured"></i> Patient</li>
+            <li class="nav-item"><i class="fas fa-calendar-check"></i> Schedule</li>
+            <li class="nav-item"><i class="fas fa-clock"></i> Appointment</li>
+            <li class="nav-item"><i class="fas fa-users"></i> Human Resources</li>
+            <li class="nav-item"><i class="fas fa-prescription-bottle"></i> Prescription</li>
+            <li class="nav-item"><i class="fas fa-flask"></i> Lab Tests</li>
+            <li class="nav-item"><i class="fas fa-pills"></i> Pharmacy</li>
+            <li class="nav-item"><i class="fas fa-heartbeat"></i> Monitoring</li>
+        </ul>
+        <div class="sidebar-footer">
+            <i class="fas fa-hospital-user"></i> ShifaaMed v1.0
+        </div>
+    </div>
+
+    <!-- MAIN PANEL (right) -->
+    <div class="main-panel">
+        <!-- header: Calendar + Today -->
+        <div class="panel-header">
+            <h2>Calendar <span>· Today</span></h2>
+            <div class="header-actions">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+
+        <!-- week days row: Sun Mon Tue Wed Thu Fri Sat -->
+        <div class="weekdays">
+            <span class="weekday">Sun</span>
+            <span class="weekday active-day">Mon</span>
+            <span class="weekday">Tue</span>
+            <span class="weekday">Wed</span>
+            <span class="weekday">Thu</span>
+            <span class="weekday">Fri</span>
+            <span class="weekday">Sat</span>
+        </div>
+
+        <!-- two cards: Appointments & Documents (as shown in sketch) -->
+        <div class="quick-cards">
+            <div class="quick-card">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Appointments</span>
+            </div>
+            <div class="quick-card">
+                <i class="fas fa-file-alt"></i>
+                <span>Documents</span>
+            </div>
+        </div>
+
+        <!-- appointments table exactly like in description -->
+        <div class="appointments-section">
+            <h3>Today's schedule</h3>
+            <table class="appointments-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>10:40 AM</td>
+                        <td>11/7</td>
+                        <td><span class="status-badge">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td>10:00 AM</td>
+                        <td>9/8</td>
+                        <td><span class="status-badge closed">Closed</span></td>
+                    </tr>
+                    <tr>
+                        <td>9:30 PM</td>
+                        <td>6/4</td>
+                        <td><span class="status-badge closed">Closed</span></td>
+                    </tr>
+                    <tr>
+                        <td>9:00 PM</td>
+                        <td>5/3</td>
+                        <td><span class="status-badge closed">Closed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- footer: "Go to" and page indicator 1 039 x 62 (approx) -->
+        <div class="dashboard-footer">
+            <div class="go-to">
+                <i class="fas fa-arrow-right"></i>
+                <span>Go to</span>
+                <span style="font-weight: 500;">· full calendar</span>
+            </div>
+            <div class="page-indicator">
+                <i class="far fa-copy"></i> 1 039 x 62
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- tiny script to match the interaction style (purely ui, static, but mimics the spec) -->
+<script>
+    (function() {
+        // just to simulate active/inactive days if you want? not necessary,
+        // but we can add a small interactive hover to mimic the "active" day on Mon.
+        // The UI is already static, exactly matching the described layout.
+        console.log('shifaeemedicare dashboard — ready');
+    })();
+</script>
+
+</body>
+</html>
